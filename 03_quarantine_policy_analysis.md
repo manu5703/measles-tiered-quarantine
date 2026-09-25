@@ -81,7 +81,7 @@ happens.
 
 Every quarantine combination, sorted into risk bands. Columns are medium
 / low-risk days, grouped by high-risk days. Low-risk days are shown in
-weekly steps to keep the figure readable.
+weekly steps to keep the figure readable. Figure below displays optimal quarantine days for outbreak > 25. 
 
 ![](md_figures/03_quarantine_policy_analysis-fig3-1.png)
 
