@@ -1,0 +1,64 @@
+CONCLUSIONS  (outbreak = more than 25 cases)
+
+1. THE PROBLEM
+   With minimal quarantine, High school is the riskiest (average 48%)
+   and Middle school the least risky (average 4%).
+
+2. WHAT MATTERS MOST
+   Increasing vaccination, biggest reduction:
+     Elementary: risk 63% -> 1%  (60% -> 85%: quarantine high 7, medium 0, low 0 days)
+     Middle: risk 13% -> 1%  (60% -> 85%: quarantine high 7, medium 7, low 3 days)
+     High: risk 78% -> 12%  (60% -> 85%: quarantine high 7, medium 0, low 0 days)
+   Increasing high-risk quarantine, biggest reduction:
+     Elementary: risk 63% -> 37%  (7 -> 21 days: 60% vaccinated - quarantine medium 0, low 0 days)
+     Middle: risk 14% -> 9%  (7 -> 21 days: 60% vaccinated - quarantine medium 7, low 7 days)
+     High: risk 67% -> 41%  (7 -> 21 days: 70% vaccinated - quarantine medium 0, low 0 days)
+   Increasing medium-risk quarantine, biggest reduction:
+     Elementary: risk 37% -> 21%  (0 -> 21 days: 60% vaccinated - quarantine high 21, low 0 days)
+     Middle: risk 11% -> 11%  (14 -> 21 days: 60% vaccinated - quarantine high 21, low 14 days)
+     High: risk 57% -> 42%  (0 -> 21 days: 60% vaccinated - quarantine high 21, low 0 days)
+   Increasing low-risk quarantine, biggest reduction:
+     Elementary: risk 55% -> 43%  (0 -> 7 days: 60% vaccinated - quarantine high 7, medium 7 days)
+     Middle: risk 0% -> 1%  (0 -> 7 days: 85% vaccinated - quarantine high 14, medium 7 days)
+     High: risk 55% -> 40%  (0 -> 14 days: 60% vaccinated - quarantine high 14, medium 14 days)
+   Most dangerous combination: High + 60%–70% vaccinated + high-risk quarantine 7 days -> average risk 62%.
+   Safest combination: Elementary or Middle + 80%–85% vaccinated -> average risk 2%.
+
+3. WHAT A SCHOOL SHOULD DO
+   To keep risk under 10%:
+     Elementary: achievable from 70% vaccination; minimal quarantine is enough from 80% vaccination.
+     Middle: achievable from 60% vaccination; minimal quarantine is enough from 70% vaccination.
+     High: achievable from 85% vaccination; minimal quarantine is enough at no tested level.
+   To keep risk under 20%:
+     Elementary: achievable from 60% vaccination; minimal quarantine is enough from 80% vaccination.
+     Middle: achievable from 60% vaccination; minimal quarantine is enough from 60% vaccination.
+     High: achievable from 70% vaccination; minimal quarantine is enough from 85% vaccination.
+   To keep risk under 30%:
+     Elementary: achievable from 60% vaccination; minimal quarantine is enough from 80% vaccination.
+     Middle: achievable from 60% vaccination; minimal quarantine is enough from 60% vaccination.
+     High: achievable from 70% vaccination; minimal quarantine is enough from 85% vaccination.
+
+4. LOW-RISK QUARANTINE
+   Elementary: the best low-risk quarantine is usually about 0 days.
+     It is not worth it (risk drops less than 2%) in 58% of high/medium settings.
+     On average, risk goes 14% -> 11% with the best number of days,
+     and only to 11% even with the longest low-risk quarantine.
+   Middle: the best low-risk quarantine is usually about 0 days.
+     It is not worth it (risk drops less than 2%) in 100% of high/medium settings.
+     On average, risk goes 3% -> 3% with the best number of days,
+     and only to 3% even with the longest low-risk quarantine.
+   High: the best low-risk quarantine is usually about 6 days.
+     It is not worth it (risk drops less than 2%) in 29% of high/medium settings.
+     On average, risk goes 30% -> 24% with the best number of days,
+     and only to 24% even with the longest low-risk quarantine.
+
+5. SIZE OF OUTBREAKS
+   Elementary, minimal quarantine: chance of more than 50 cases falls from 20% at 60% to 0% at 85% vaccination.
+     Optimal quarantine (high/medium/low days): 21/7/5 at 60%; 14/7/7 at 70%; 21/7/0 at 80%; 7/0/0 at 85%.
+     With it, the chance of more than 50 cases is 12% at 60% and 0% at 85% vaccination.
+   Middle, minimal quarantine: chance of more than 50 cases falls from 4% at 60% to 0% at 85% vaccination.
+     Optimal quarantine (high/medium/low days): 14/0/0 at 60%; 7/0/0 at 70%; 7/0/0 at 80%; 7/0/0 at 85%.
+     With it, the chance of more than 50 cases is 2% at 60% and 0% at 85% vaccination.
+   High, minimal quarantine: chance of more than 50 cases falls from 65% at 60% to 0% at 85% vaccination.
+     Optimal quarantine (high/medium/low days): 21/14/10 at 60%; 14/14/10 at 70%; 14/7/5 at 80%; 21/7/0 at 85%.
+     With it, the chance of more than 50 cases is 23% at 60% and 0% at 85% vaccination.

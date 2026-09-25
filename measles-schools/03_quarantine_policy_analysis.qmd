@@ -1,0 +1,631 @@
+---
+title: "3. Which quarantine policy keeps outbreaks small?"
+subtitle: "Measles in Grantz schools, real SMART per-capita contact matrices, R0 = 12"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-fold: true
+    code-summary: "Show code"
+    df-print: kable
+    embed-resources: true
+    fig-dpi: 150
+  gfm:
+    echo: false        # GitHub version shows results only; code is in the .qmd
+    toc: true
+    toc-depth: 2
+execute:
+  warning: false
+  message: false
+---
+
+This is the main analysis. Every combination of school, vaccination coverage
+and **high / medium / low-risk quarantine days** (with high e medium e low) is
+simulated once, and all figures are computed from that single set of runs.
+
+| Figure | Question |
+|:--|:--|
+| 1  | How risky is each school with minimal quarantine? |
+| 2a | Where does each factor reduce outbreak risk the most? |
+| 2b | Which combinations of factors make outbreaks likely? |
+| 3  | Which quarantine combinations keep risk low? |
+| 4  | Given high- and medium-risk days, how many low-risk days are worth it? |
+| 5  | When outbreaks happen, how big do they get? |
+| 6  | How does risk change with low-risk days, across thresholds? |
+
+Plain-language conclusions, computed from the results, are at the end and are
+also written to `results/conclusions.txt`.
+
+::: {.callout-note}
+Model code lives in `measles_model.R`. Simulations are cached in
+`results/`, and PNG copies of every figure are saved to `figures/`.
+:::
+
+::: {.content-hidden when-format="markdown"}
+
+## Setup
+
+```{r setup}
+source("measles_model.R")
+library(rpart)            # decision tree for Figure 2 (ships with R)
+
+## Design grid
+VACCS <- c(0.60, 0.70, 0.80, 0.85)
+HIGHS <- c(7L, 14L, 21L)
+MEDS  <- c(0L, 7L, 14L, 21L)
+LOWS  <- c(0L, 3L, 5L, 7L, 10L, 14L, 21L)
+
+## Analysis choices
+K_MAIN     <- 25L                  # an "outbreak" = MORE THAN K_MAIN cases
+KS         <- c(10L, 35L, 50L)     # thresholds compared in Figure 6
+TARGETS    <- c(0.10, 0.20, 0.30)  # acceptable outbreak risks (Figure 3)
+OPT_SHARE  <- 0.80   # "optimal" = fewest days giving 80% of the possible benefit
+MIN_GAIN   <- 0.02   # if quarantine can't cut risk by 2 points, optimal = 0 days
+FIG3_LOWS  <- c(0L, 7L, 14L, 21L)  # low-risk days shown in Figure 3
+TREE_DEPTH <- 3      # decision-tree depth (3 = at most 8 risk groups)
+ADD_CAPTION <- FALSE # TRUE adds a methods caption under every saved figure
+```
+
+```{r plot-settings}
+theme_set(theme_measles(12))
+
+ylab_risk  <- sprintf("Chance of more than %d cases", K_MAIN)
+VACC_LABS  <- vacc_lab(VACCS)
+MIN_POLICY <- sprintf("%d / 0 / 0", min(HIGHS))
+
+CAPTION <- sprintf(
+  "Outbreak = more than %d cases. %s simulations per setting, each starting with one infected student.",
+  K_MAIN, format(N_SIMS, big.mark = ","))
+
+## save_fig() plus the optional caption
+fig <- function(p, file, width, height) {
+  if (ADD_CAPTION)
+    p <- p + labs(caption = CAPTION) +
+      theme(plot.caption = element_text(colour = "grey35", size = 9, hjust = 0))
+  save_fig(p, file, width, height)
+}
+```
+
+:::
+
+## Simulations
+
+```{r simulate}
+design <- policy_grid(VACCS, HIGHS, MEDS, LOWS)
+sims   <- run_or_load("policy_grid", simulate_design(design))
+
+## Probability of an outbreak (> K_MAIN cases) at every design point
+summ <- sims[, .(P = mean(size > K_MAIN)),
+             by = .(school, vacc, q_high, q_med, q_low)]
+summ[, vacc_lab := factor(vacc_lab(vacc), levels = VACC_LABS)]
+```
+
+`r nrow(design)` quarantine/vaccination settings per school ×
+`r length(SCHOOLS)` schools × `r format(N_SIMS, big.mark = ",")` simulations
+= `r format(nrow(sims), big.mark = ",")` runs.
+
+::: {.callout-important}
+## What "outbreak risk" means in this report
+
+Each simulation starts with one infected student. An **outbreak** is a
+simulation that ends with **more than `r K_MAIN` total cases**. The
+**outbreak risk** of a setting is the share of its
+`r format(N_SIMS, big.mark = ",")` simulations that ended this way, i.e.
+P(final outbreak size > `r K_MAIN`). Figures 1 to 5 and the conclusions use
+this definition; Figure 6 repeats it for several other thresholds.
+:::
+
+## 1. The problem
+
+With minimal quarantine (only high-risk contacts quarantined), how likely is
+an outbreak?
+
+```{r fig1, fig.width=10, fig.height=4.5}
+d1 <- summ[q_med == 0 & q_low == 0]
+
+p1 <- ggplot(d1, aes(factor(q_high, levels = HIGHS), vacc_lab, fill = P)) +
+  geom_tile(colour = "white", linewidth = 1) +
+  geom_text(aes(label = pct(P, accuracy = 1), colour = P > 0.5),
+            size = 4, show.legend = FALSE) +
+  scale_colour_manual(values = c(`TRUE` = "white", `FALSE` = "black")) +
+  scale_fill_gradient(low = "#fff5eb", high = "#b30000", limits = c(0, 1),
+                      labels = pct, name = ylab_risk) +
+  facet_wrap(~ school) +
+  labs(x = "High-risk quarantine (days)", y = "Students vaccinated",
+       title = "1. Outbreak risk with only high-risk contacts quarantined",
+       subtitle = "Darker = more dangerous") +
+  theme(panel.grid = element_blank())
+
+fig(p1, "fig1_baseline_risk.png", 10, 4.5)
+```
+
+## 2. What drives outbreak risk?
+
+### 2a. Effect of each factor
+
+For every setting, move **one** factor from its lowest to its highest allowed
+value while everything else stays fixed. For each factor and school we show
+the biggest reduction, and name the setting where it happens.
+
+```{r fig2a-data}
+FACTOR_TITLES <- c(vacc   = "Increasing vaccination",
+                   q_high = "Increasing high-risk quarantine",
+                   q_med  = "Increasing medium-risk quarantine",
+                   q_low  = "Increasing low-risk quarantine")
+
+## Risk at the lowest vs highest value of `var`, all else fixed
+range_pairs <- function(var) {
+  keys <- setdiff(c("school", "vacc", "q_high", "q_med", "q_low"), var)
+  summ[, {
+    o <- .SD[order(.SD[[var]])]
+    if (.N < 2) NULL
+    else .(from = o[[var]][1], to = o[[var]][.N], before = o$P[1], after = o$P[.N])
+  }, by = keys][, factor := var]
+}
+
+## "80% vaccinated · quarantine high 21, medium 7 days"
+context <- function(r, var) {
+  q <- c(q_high = "high", q_med = "medium", q_low = "low")
+  others <- setdiff(names(q), var)
+  paste0(if (var != "vacc") sprintf("%s vaccinated \u00b7 ", pct(r$vacc)) else "",
+         "quarantine ",
+         paste(sprintf("%s %d", q[others], unlist(r[, ..others])), collapse = ", "),
+         " days")
+}
+
+change <- function(r, var) {
+  if (var == "vacc") sprintf("%s \u2192 %s", pct(r$from), pct(r$to))
+  else sprintf("%d \u2192 %d days", r$from, r$to)
+}
+
+d2a <- rbindlist(lapply(names(FACTOR_TITLES), function(var) {
+  pr <- range_pairs(var)
+  pr[, effect := before - after]
+  best <- pr[order(-effect)][, .SD[1], by = school][order(match(school, SCHOOLS))]
+  rbindlist(lapply(seq_len(nrow(best)), function(k) {
+    r <- best[k]
+    data.table(factor = var, school = as.character(r$school),
+               before = r$before, after = r$after,
+               case = sprintf("%s (%s)\n%s", as.character(r$school),
+                              change(r, var), context(r, var)))
+  }))
+}))
+d2a[, factor_title := factor(FACTOR_TITLES[factor], levels = FACTOR_TITLES)]
+d2a[, case := factor(case, levels = rev(unique(case)))]
+d2a[, direction := ifelse(after <= before, "Risk goes down", "Risk goes up")]
+```
+
+```{r fig2a, fig.width=11, fig.height=10}
+p2a <- ggplot(d2a, aes(y = case)) +
+  geom_segment(aes(x = before, xend = after, yend = case, colour = direction),
+               linewidth = 1.2,
+               arrow = arrow(length = unit(0.2, "cm"), type = "closed")) +
+  geom_point(aes(x = before), colour = "grey45", size = 3) +
+  ## labels sit outside the arrow ends so they never overlap
+  geom_text(aes(x = before, label = pct(before, accuracy = 1),
+                hjust = ifelse(after <= before, -0.4, 1.4)),
+            colour = "grey30", size = 3.3) +
+  geom_text(aes(x = after, label = pct(after, accuracy = 1), colour = direction,
+                hjust = ifelse(after <= before, 1.3, -0.3)),
+            size = 3.3, fontface = "bold", show.legend = FALSE) +
+  scale_colour_manual(values = c("Risk goes down" = "#2171b5",
+                                 "Risk goes up"   = "#b30000"), name = NULL) +
+  scale_x_continuous(labels = pct, limits = c(0, 1)) +
+  facet_wrap(~ factor_title, ncol = 1, scales = "free_y") +
+  labs(x = ylab_risk, y = NULL,
+       title = "2a. Where does each factor reduce outbreak risk the most?",
+       subtitle = "Biggest reduction found in each school. Grey dot = before, arrow = after. Each row names the setting where it happens") +
+  theme(panel.grid.major.y = element_blank(),
+        strip.text  = element_text(hjust = 0, size = 12),
+        axis.text.y = element_text(size = 9, lineheight = 0.9))
+
+fig(p2a, "fig2a_factor_effects.png", 11, 10)
+```
+
+### 2b. Risk groups
+
+A decision tree looks at school, vaccination and all three quarantine lengths
+**at the same time**, and repeatedly splits the settings into the groups that
+differ most in outbreak risk.
+
+```{r fig2b-data}
+tree_dat <- summ[, .(P, school, vacc, q_high, q_med, q_low)]
+
+fit <- rpart(P ~ school + vacc + q_high + q_med + q_low,
+             data = tree_dat, method = "anova",
+             control = rpart.control(maxdepth = TREE_DEPTH, cp = 0.005,
+                                     minbucket = 6, xval = 0))
+
+tree_dat[, leaf := rownames(fit$frame)[fit$where]]
+leaf_ids <- unique(tree_dat$leaf)
+paths    <- path.rpart(fit, nodes = as.numeric(leaf_ids), print.it = FALSE)
+
+VAR_NAMES <- c("school", "vacc", "q_high", "q_med", "q_low")
+
+## Describe the values of one variable inside a leaf, in words
+describe <- function(v, x) {
+  u <- sort(unique(x))
+  if (v == "school") return(paste(as.character(u), collapse = " or "))
+  rng <- if (length(u) == 1) as.character(u) else sprintf("%s\u2013%s", min(u), max(u))
+  switch(v,
+    vacc   = if (length(u) == 1) sprintf("%s vaccinated", pct(u))
+             else sprintf("%s\u2013%s vaccinated", pct(min(u)), pct(max(u))),
+    q_high = sprintf("high-risk quarantine %s days", rng),
+    q_med  = sprintf("medium-risk quarantine %s days", rng),
+    q_low  = sprintf("low-risk quarantine %s days", rng))
+}
+
+d2b <- rbindlist(lapply(leaf_ids, function(id) {
+  conds <- paths[[id]][-1]
+  vars  <- intersect(VAR_NAMES, unique(sub("\\s*(<|>|=).*$", "", conds)))
+  rows  <- tree_dat[leaf == id]
+  rule  <- if (length(vars) == 0) "All settings"
+           else paste(vapply(vars, function(v) describe(v, rows[[v]]), ""), collapse = " + ")
+  data.table(rule = rule, risk = mean(rows$P), n = nrow(rows))
+}))
+
+d2b[, rule_wrapped := vapply(strwrap(rule, 55, simplify = FALSE), paste, "", collapse = "\n")]
+d2b[, rule_wrapped := make.unique(rule_wrapped)]
+d2b[, rule_f := factor(rule_wrapped, levels = rule_wrapped[order(risk)])]
+```
+
+```{r fig2b, fig.width=11, fig.height=1.5 + 0.6 * nrow(d2b)}
+p2b <- ggplot(d2b, aes(risk, rule_f, fill = risk)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = sprintf("%s  (%d settings)", pct(risk, accuracy = 1), n)),
+            hjust = -0.05, size = 3.4) +
+  scale_fill_gradient(low = "#fcbba1", high = "#99000d", limits = c(0, 1), guide = "none") +
+  scale_x_continuous(labels = pct, breaks = seq(0, 1, 0.25), limits = c(0, 1.25)) +
+  labs(x = sprintf("Average %s", tolower(ylab_risk)), y = NULL,
+       title = "2b. Which combinations make outbreaks likely?",
+       subtitle = "Groups found automatically by examining all factors together. Top = most dangerous") +
+  theme(panel.grid.major.y = element_blank(),
+        axis.text.y = element_text(size = 10, lineheight = 0.9))
+
+fig(p2b, "fig2b_risk_groups.png", 11, 1.5 + 0.6 * nrow(d2b))
+```
+
+## 3. Which quarantine combinations keep risk low?
+
+Every quarantine combination, sorted into risk bands. Columns are medium /
+low-risk days, grouped by high-risk days. Low-risk days are shown in weekly
+steps to keep the figure readable.
+
+```{r fig3, fig.width=11, fig.height=7}
+## Shortest policy per target (used in the conclusions)
+d3 <- rbindlist(lapply(TARGETS, function(tg) {
+  summ[, {
+    ok <- .SD[P <= tg][order(q_high + q_med + q_low, q_low, q_med)]
+    if (nrow(ok) == 0) .(days = NA_integer_, label = "Not possible")
+    else .(days  = ok$q_high[1] + ok$q_med[1] + ok$q_low[1],
+           label = sprintf("%d / %d / %d", ok$q_high[1], ok$q_med[1], ok$q_low[1]))
+  }, by = .(school, vacc_lab)][, target := tg]
+}))
+
+BAND_LABS <- c(sprintf("Under %s", pct(TARGETS[1])),
+               sprintf("%s\u2013%s", pct(head(TARGETS, -1)), pct(TARGETS[-1])),
+               sprintf("Over %s", pct(tail(TARGETS, 1))))
+BAND_COLS <- colorRampPalette(c("#1a9850", "#fee08b", "#d73027"))(length(BAND_LABS))
+
+d3p <- summ[q_low %in% FIG3_LOWS]
+d3p[, band := cut(P, breaks = c(-Inf, TARGETS, Inf), labels = BAND_LABS)]
+ML_LEVELS <- unique(d3p[order(q_med, q_low), sprintf("%d/%d", q_med, q_low)])
+d3p[, ml := factor(sprintf("%d/%d", q_med, q_low), levels = ML_LEVELS)]
+d3p[, high_lab := factor(sprintf("High-risk %d days", q_high),
+                         levels = sprintf("High-risk %d days", HIGHS))]
+
+p3 <- ggplot(d3p, aes(ml, vacc_lab, fill = band)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  scale_fill_manual(values = BAND_COLS, name = "Outbreak risk", drop = FALSE) +
+  facet_grid(school ~ high_lab, scales = "free_x", space = "free_x") +
+  labs(x = "Medium / low-risk quarantine days", y = "Students vaccinated",
+       title = "3. Every quarantine combination: which ones keep risk low?",
+       subtitle = "Each square is one policy. Green = safest. Read left to right to find the shortest policy that turns green") +
+  theme(panel.grid = element_blank(), axis.text.x = element_text(size = 9))
+
+fig(p3, "fig3_policy_options.png", 11, 7)
+```
+
+## 4. How many low-risk quarantine days are worth it?
+
+For each fixed high/medium policy: the fewest low-risk days that give
+`r pct(OPT_SHARE)` of the benefit low-risk quarantine can provide. Each cell
+shows those days and the risk without  with them.
+
+```{r fig4, fig.width=12, fig.height=5.8}
+d4 <- summ[q_med > 0, {
+  o     <- .SD[order(q_low)]
+  risk0 <- o$P[o$q_low == 0]
+  gain  <- cummax(risk0 - o$P)     # more days never counted as worse (smooths noise)
+  G     <- max(gain)
+  best  <- if (G < MIN_GAIN) 0L else o$q_low[which(gain >= OPT_SHARE * G)[1]]
+  .(opt_low  = best,
+    risk0    = risk0,
+    risk_opt = risk0 - gain[o$q_low == best],
+    risk_max = risk0 - G)
+}, by = .(school, vacc, vacc_lab, q_high, q_med)]
+
+hm_levels <- unique(d4[order(-q_high, -q_med), sprintf("High %d \u00b7 Med %d", q_high, q_med)])
+d4[, hm := factor(sprintf("High %d \u00b7 Med %d", q_high, q_med), levels = rev(hm_levels))]
+
+p4 <- ggplot(d4, aes(vacc_lab, hm, fill = opt_low)) +
+  geom_tile(colour = "white", linewidth = 1) +
+  geom_text(aes(label = ifelse(opt_low == 0, "Not\nworth it",
+                               sprintf("%d days\n%s \u2192 %s", opt_low,
+                                       pct(risk0, accuracy = 1), pct(risk_opt, accuracy = 1))),
+                colour = opt_low > 10),
+            size = 2.8, lineheight = 0.9, show.legend = FALSE) +
+  scale_colour_manual(values = c(`TRUE` = "white", `FALSE` = "black")) +
+  scale_fill_gradient(low = "#f7fbff", high = "#08519c", limits = c(0, max(LOWS)),
+                      name = "Optimal low-risk days") +
+  facet_wrap(~ school) +
+  labs(x = "Students vaccinated", y = "Fixed policy (days)",
+       title = "4. How many low-risk quarantine days are worth it?",
+       subtitle = sprintf(
+         "Each cell: best number of low-risk days, and outbreak risk without \u2192 with them. \"Not worth it\" = risk drops less than %s",
+         pct(MIN_GAIN))) +
+  theme(panel.grid = element_blank())
+
+fig(p4, "fig4_optimal_low.png", 12, 5.8)
+```
+
+## 5. How big do outbreaks get?
+
+```{r fig5-helpers}
+SIZE_LABS <- c("10 or fewer", "11\u201335", "36\u201350", "More than 50")
+SIZE_COLS <- c("#fee5d9", "#fcae91", "#fb6a4a", "#a50f15")
+
+## Share of runs in each size band, for the policy chosen per school/vacc
+size_shares <- function(policy) {
+  d <- sims[policy, on = .(school, vacc, q_high, q_med, q_low)]
+  d[, size_cat := cut(size, breaks = c(-Inf, 10, 35, 50, Inf), labels = SIZE_LABS)]
+  d <- d[, .N, by = .(school, vacc, size_cat)][, share := N / sum(N), by = .(school, vacc)]
+  d[, vacc_lab := factor(vacc_lab(vacc), levels = VACC_LABS)]
+  d[]
+}
+
+size_plot <- function(d) {
+  ggplot(d, aes(vacc_lab, share, fill = size_cat)) +
+    geom_col(width = 0.7, position = position_stack(reverse = TRUE)) +
+    scale_fill_manual(values = SIZE_COLS, name = "Total cases", drop = FALSE) +
+    facet_wrap(~ school) +
+    labs(x = "Students vaccinated", y = "Share of simulations") +
+    theme(panel.grid.major.x = element_blank())
+}
+```
+
+::: {.panel-tabset}
+
+### 5a. Minimal quarantine
+
+```{r fig5a, fig.width=10, fig.height=4.8}
+min_pol <- unique(summ[q_high == min(HIGHS) & q_med == 0 & q_low == 0,
+                       .(school, vacc, q_high, q_med, q_low)])
+
+p5a <- size_plot(size_shares(min_pol)) +
+  scale_y_continuous(labels = pct) +
+  labs(title = "5a. How big outbreaks get",
+       subtitle = sprintf("Minimal quarantine (%s). Light = died out, dark = spread widely", MIN_POLICY))
+
+fig(p5a, "fig5a_outbreak_size_minimal.png", 10, 4.8)
+```
+
+### 5b. Optimal quarantine
+
+For each school and vaccination level, the optimal policy is the one with the
+fewest total quarantine days that gets at least `r pct(OPT_SHARE)` of the
+largest possible risk reduction (any high / medium / low combination). If
+extra quarantine can't lower risk by `r pct(MIN_GAIN)`, the minimal policy is
+kept.
+
+```{r fig5b, fig.width=10, fig.height=5}
+opt_pick <- function(dt) {
+  dt    <- copy(dt)
+  risk0 <- dt[q_high == min(HIGHS) & q_med == 0 & q_low == 0, P]
+  best  <- min(dt$P)
+  dt[, days := q_high + q_med + q_low]
+  need <- if (risk0 - best < MIN_GAIN) 0 else OPT_SHARE * (risk0 - best)
+  dt[risk0 - P >= need - 1e-12][order(days, P)][1, .(q_high, q_med, q_low)]
+}
+
+opt_pol <- summ[, opt_pick(.SD), by = .(school, vacc)]
+opt_pol[, policy := sprintf("%d/%d/%d", q_high, q_med, q_low)]
+
+d5b     <- size_shares(opt_pol[, !"policy"])
+pol_lab <- opt_pol[, .(school, vacc_lab = factor(vacc_lab(vacc), levels = VACC_LABS), policy)]
+
+p5b <- size_plot(d5b) +
+  geom_text(data = pol_lab, aes(vacc_lab, 1, label = policy), inherit.aes = FALSE,
+            vjust = -0.6, size = 3.3, fontface = "bold") +
+  scale_y_continuous(labels = pct, limits = c(0, 1.08), breaks = seq(0, 1, 0.25)) +
+  labs(title = "5b. How big outbreaks get with the optimal quarantine",
+       subtitle = sprintf(paste0("Above each bar: optimal quarantine days (high/medium/low), the shortest policy\n",
+                                 "giving %s of the largest possible risk reduction. Light = died out, dark = spread widely"),
+                          pct(OPT_SHARE)))
+
+fig(p5b, "fig5b_outbreak_size_optimal.png", 10, 5)
+```
+
+:::
+
+## 6. Risk vs low-risk quarantine days, across thresholds
+
+P(outbreak > K) against low-risk quarantine days, for all three schools on the
+same plot. Colour family = school; darker shade = longer medium-risk
+quarantine. Points are simulated values, lines are LOESS smooths, and ribbons
+are 95% Wilson intervals.
+
+```{r fig6-setup}
+## Orange / green / blue families, lighter -> darker as medium days increase
+CURVE_COLS <- c(
+  Elementary_0 = "#F6C667", Elementary_7 = "#E69F00", Elementary_14 = "#B87900", Elementary_21 = "#7A4F00",
+  Middle_0     = "#80CFA9", Middle_7     = "#009E73", Middle_14     = "#00734F", Middle_21     = "#004D35",
+  High_0       = "#80B8E6", High_7       = "#0072B2", High_14       = "#005080", High_21       = "#003450")
+
+threshold_plot <- function(K) {
+  d <- sims[, {
+    x  <- sum(size > K); n <- .N; ci <- wilson(x, n)
+    .(P = x / n, lo = ci$lo, hi = ci$hi)
+  }, by = .(school, vacc, q_high, q_med, q_low)]
+  d[, curve := paste(school, q_med, sep = "_")]
+
+  dir.create(RESULTS_DIR, showWarnings = FALSE)
+  fwrite(d, file.path(RESULTS_DIR, sprintf("table_grid_p%d_all_schools.csv", K)))
+
+  ggplot(d, aes(q_low, P, colour = curve, group = curve)) +
+    geom_vline(xintercept = c(7, 14, 21), colour = "grey88", linewidth = 0.4) +
+    geom_ribbon(aes(ymin = lo, ymax = hi, fill = curve),
+                alpha = 0.06, colour = NA, show.legend = FALSE) +
+    geom_smooth(method = "loess", formula = y ~ x, se = FALSE,
+                span = 0.9, linewidth = 1.1) +
+    geom_point(size = 1.4, alpha = 0.8) +
+    facet_grid(vacc ~ q_high, labeller = labeller(
+      vacc   = function(v) paste0(as.numeric(v) * 100, "% vaccinated"),
+      q_high = function(h) paste0("High = ", h, " days"))) +
+    scale_colour_manual(values = CURVE_COLS, breaks = names(CURVE_COLS),
+                        labels = sub("_", ", medium ", names(CURVE_COLS)),
+                        name = NULL, guide = guide_legend(nrow = 3, byrow = TRUE)) +
+    scale_fill_manual(values = CURVE_COLS, guide = "none") +
+    scale_x_continuous(limits = c(0, 21), breaks = c(0, 7, 14, 21),
+                       expand = expansion(mult = c(0.01, 0.02))) +
+    scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+    labs(x = "Low-risk quarantine days", y = sprintf("P(outbreak > %d)", K),
+         title = sprintf("6. Probability of outbreak > %d across school types", K),
+         subtitle = "Darker shades = longer medium-risk quarantine") +
+    theme_measles(11) +
+    theme(legend.position = "top", legend.box = "vertical",
+          panel.grid.major.x = element_blank())
+}
+```
+
+::: {.panel-tabset}
+
+```{r fig6, results='asis', fig.width=12, fig.height=9}
+for (K in KS) {
+  cat("\n\n### K = ", K, "\n\n")
+  print(fig(threshold_plot(K), sprintf("fig6_grid_p%d_all_schools.png", K), 12, 9))
+  cat("\n\n")
+}
+```
+
+:::
+
+## Supplement: every quarantine combination, per school
+
+::: {.panel-tabset}
+
+```{r supplement, results='asis', fig.width=11, fig.height=10}
+summ[, high_lab := factor(paste0("High-risk = ", q_high, " days"),
+                          levels = paste0("High-risk = ", HIGHS, " days"))]
+
+for (s in SCHOOLS) {
+  cat("\n\n### ", s, "\n\n")
+  ps <- ggplot(summ[school == s],
+               aes(factor(q_low, levels = LOWS), factor(q_med, levels = MEDS), fill = P)) +
+    geom_tile(colour = "white", linewidth = 0.6) +
+    geom_text(aes(label = pct(P, accuracy = 1), colour = P > 0.5),
+              size = 2.6, show.legend = FALSE) +
+    scale_colour_manual(values = c(`TRUE` = "white", `FALSE` = "black")) +
+    scale_fill_gradient(low = "#fff5eb", high = "#b30000", limits = c(0, 1),
+                        labels = pct, name = ylab_risk) +
+    facet_grid(paste(vacc_lab, "vaccinated") ~ high_lab) +
+    labs(x = "Low-risk quarantine (days)", y = "Medium-risk quarantine (days)",
+         title = sprintf("Supplement: %s school, every quarantine combination", s),
+         subtitle = "Empty cells are not allowed (high \u2265 medium \u2265 low)") +
+    theme(panel.grid = element_blank())
+  print(fig(ps, sprintf("supp_grid_%s.png", tolower(s)), 11, 10))
+  cat("\n\n")
+}
+```
+
+:::
+
+## Conclusions
+
+```{r conclusions}
+out   <- character()
+add   <- function(...) out <<- c(out, sprintf(...))
+ascii <- function(x) gsub("\u00b7", "-", gsub("\u2192", "->", x))   # plain-text file
+
+add("CONCLUSIONS  (outbreak = more than %d cases)", K_MAIN)
+add("")
+
+## 1. Riskiest school
+base <- summ[q_high == min(HIGHS) & q_med == 0 & q_low == 0,
+             .(P = mean(P)), by = school][order(-P)]
+add("1. THE PROBLEM")
+add("   With minimal quarantine, %s school is the riskiest (average %s)",
+    as.character(base$school[1]), pct(base$P[1], 1))
+add("   and %s school the least risky (average %s).",
+    as.character(last(base$school)), pct(last(base$P), 1))
+add("")
+
+## 2. Levers
+add("2. WHAT MATTERS MOST")
+for (v in names(FACTOR_TITLES)) {
+  add("   %s, biggest reduction:", FACTOR_TITLES[[v]])
+  for (k in seq_len(nrow(d2a[factor == v]))) {
+    r <- d2a[factor == v][k]
+    add("     %s: risk %s -> %s  (%s)", r$school, pct(r$before, 1), pct(r$after, 1),
+        ascii(sub("^[^(]*\\(", "", sub("\\)\n", ": ", as.character(r$case)))))
+  }
+}
+g <- d2b[order(-risk)]
+add("   Most dangerous combination: %s -> average risk %s.", g$rule[1], pct(g$risk[1], 1))
+add("   Safest combination: %s -> average risk %s.", last(g$rule), pct(last(g$risk), 1))
+add("")
+
+## 3. Policy
+add("3. WHAT A SCHOOL SHOULD DO")
+for (tg in TARGETS) {
+  add("   To keep risk under %s:", pct(tg))
+  for (s in SCHOOLS) {
+    t  <- d3[school == s & target == tg][order(vacc_lab)]
+    ok <- t[!is.na(days)]
+    mn <- t[label == MIN_POLICY]
+    add("     %s: %s; minimal quarantine is enough %s.", s,
+        if (nrow(ok)) sprintf("achievable from %s vaccination", as.character(ok$vacc_lab[1]))
+        else "not achievable at any tested vaccination level",
+        if (nrow(mn)) sprintf("from %s vaccination", as.character(mn$vacc_lab[1]))
+        else "at no tested level")
+  }
+}
+add("")
+
+## 4. Optimal low-risk days
+add("4. LOW-RISK QUARANTINE")
+for (s in SCHOOLS) {
+  o <- d4[school == s]
+  add("   %s: the best low-risk quarantine is usually about %g days.", s, median(o$opt_low))
+  add("     It is not worth it (risk drops less than %s) in %s of high/medium settings.",
+      pct(MIN_GAIN), pct(mean(o$opt_low == 0), 1))
+  add("     On average, risk goes %s -> %s with the best number of days,",
+      pct(mean(o$risk0), 1), pct(mean(o$risk_opt), 1))
+  add("     and only to %s even with the longest low-risk quarantine.", pct(mean(o$risk_max), 1))
+}
+add("")
+
+## 5. Size
+add("5. SIZE OF OUTBREAKS")
+for (s in SCHOOLS) {
+  b <- sims[school == s & q_high == min(HIGHS) & q_med == 0 & q_low == 0,
+            .(share = mean(size > 50)), by = vacc][order(vacc)]
+  add("   %s, minimal quarantine: chance of more than 50 cases falls from %s at %s to %s at %s vaccination.",
+      s, pct(b$share[1], 1), pct(b$vacc[1]), pct(last(b$share), 1), pct(last(b$vacc)))
+
+  op <- opt_pol[school == s][order(vacc)]
+  bo <- sims[op, on = .(school, vacc, q_high, q_med, q_low)][
+    , .(share = mean(size > 50)), by = vacc][order(vacc)]
+  add("     Optimal quarantine (high/medium/low days): %s.",
+      paste(sprintf("%s at %s", op$policy, pct(op$vacc)), collapse = "; "))
+  add("     With it, the chance of more than 50 cases is %s at %s and %s at %s vaccination.",
+      pct(bo$share[1], 1), pct(bo$vacc[1]), pct(last(bo$share), 1), pct(last(bo$vacc)))
+}
+
+writeLines(out, file.path(RESULTS_DIR, "conclusions.txt"))
+```
+
+```{r print-conclusions, results='asis'}
+cat("```text", out, "```", sep = "\n")
+```
+
