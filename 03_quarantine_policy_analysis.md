@@ -22,8 +22,7 @@ single set of runs.
 | Figure | Question                                                               |
 |:-------|:-----------------------------------------------------------------------|
 | 1      | How risky is each school with minimal quarantine?                      |
-| 2a     | Where does each factor reduce outbreak risk the most?                  |
-| 2b     | Which combinations of factors make outbreaks likely?                   |
+| 2     | Where does each factor reduce outbreak risk the most?                  |
 | 3      | Which quarantine combinations keep risk low?                           |
 | 4      | Given high- and medium-risk days, how many low-risk days are worth it? |
 | 5      | When outbreaks happen, how big do they get?                            |
@@ -68,7 +67,7 @@ likely is an outbreak?
 
 ## 2. What drives outbreak risk?
 
-### 2a. Effect of each factor
+### Effect of each factor
 
 For every setting, move **one** factor from its lowest to its highest
 allowed value while everything else stays fixed. For each factor and
@@ -77,13 +76,6 @@ happens.
 
 ![](md_figures/03_quarantine_policy_analysis-fig2a-1.png)
 
-### 2b. Risk groups
-
-A decision tree looks at school, vaccination and all three quarantine
-lengths **at the same time**, and repeatedly splits the settings into
-the groups that differ most in outbreak risk.
-
-![](md_figures/03_quarantine_policy_analysis-fig2b-1.png)
 
 ## 3. Which quarantine combinations keep risk low?
 
