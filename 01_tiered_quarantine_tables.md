@@ -32,6 +32,49 @@ comparisons.
 
 </div>
 
+## Contact matrices
+
+The model uses real per-capita contact matrices from the SMART
+(Pittsburgh) school contact study, one per school type. Each row is the
+grade of a student, and each column is the grade of the students they
+have contact with. The values below are the raw matrices. Before running
+the model, each matrix is symmetrised, `0.5 * (C + t(C))`, so that
+contacts are reciprocal. Their magnitude is kept as is; R0 = 12 is set
+through a per-school transmission rate instead.
+
+### Elementary school (grades K–5, 26 students per grade)
+
+| Grade | K | 1 | 2 | 3 | 4 | 5 |
+|:--|--:|--:|--:|--:|--:|--:|
+| **K** | 18.74 | 1.32 | 0.25 | 0.09 | 3.77 | 0.14 |
+| **1** | 1.14 | 24.52 | 3.06 | 0.02 | 0.17 | 0.00 |
+| **2** | 0.29 | 4.21 | 13.96 | 6.60 | 1.60 | 0.00 |
+| **3** | 0.08 | 0.02 | 5.03 | 17.49 | 9.57 | 0.02 |
+| **4** | 3.21 | 0.16 | 1.15 | 9.00 | 25.37 | 0.79 |
+| **5** | 0.21 | 0.00 | 0.00 | 0.03 | 1.39 | 32.42 |
+
+### Middle school (grades 5–8, 59 students per grade)
+
+| Grade | 5 | 6 | 7 | 8 |
+|:--|--:|--:|--:|--:|
+| **5** | 35.15 | 0.67 | 0.00 | 0.00 |
+| **6** | 0.61 | 27.91 | 0.00 | 0.00 |
+| **7** | 0.00 | 0.00 | 65.94 | 0.11 |
+| **8** | 0.00 | 0.00 | 0.17 | 31.32 |
+
+### High school (grades 9–12, 58 students per grade)
+
+| Grade | 9 | 10 | 11 | 12 |
+|:--|--:|--:|--:|--:|
+| **9** | 25.98 | 14.45 | 3.94 | 1.38 |
+| **10** | 12.12 | 20.71 | 6.04 | 2.42 |
+| **11** | 4.56 | 8.33 | 14.26 | 6.31 |
+| **12** | 1.89 | 3.97 | 7.48 | 14.97 |
+
+Most contacts happen within the same grade (the diagonal). Middle-school
+grades mix very little with each other, while high-school grades mix the
+most across grades.
+
 ## Transmission rate check
 
 Each school gets its own transmission rate so that R0 = 12. The table
