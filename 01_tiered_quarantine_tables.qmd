@@ -157,20 +157,28 @@ for (i in seq_along(THRESHOLDS)) {
                                     fmt_diff(newcombe_diff(x, n, xr, n_ref)))]
 }
 
+## Unvaccinated students in the school at this coverage (students x (1 - vacc))
+counts[, unvacc := as.integer(round(
+  vapply(school, function(s) sum(ENROLLMENT[[s]]), numeric(1)) * (1 - vacc)))]
+
 counts[, strategy := factor(strategy, levels = unique(design$strategy))]
 setorder(counts, school, vacc, strategy)
 
 ## One results table
 results_table <- function(d, first_col = "Strategy") {
-  knitr::kable(d[, c("strategy", PROB_COLS, DIFF_COLS), with = FALSE],
-               col.names = c(first_col, PROB_COLS, DIFF_COLS),
-               align = c("l", rep("r", length(PROB_COLS)), rep("r", length(DIFF_COLS))))
+  knitr::kable(d[, c("strategy", "unvacc", PROB_COLS, DIFF_COLS), with = FALSE],
+               col.names = c(first_col, "Unvaccinated students", PROB_COLS, DIFF_COLS),
+               align = c("l", "r", rep("r", length(PROB_COLS)), rep("r", length(DIFF_COLS))))
 }
 ```
 
 :::
 
 ## Results by school
+
+*Unvaccinated students* is the number of students without vaccine at that
+coverage (enrolment × (1  coverage)). Only these students can be quarantined,
+and an outbreak can only grow beyond this number through rare vaccine failures.
 
 Differences are in percentage points with 95% confidence intervals.
 For example, **+3.1 (+1.2 to +5.0)** means the strategy has 3.1 percentage

@@ -134,7 +134,7 @@ simulator <- function(school, duration, vaccinated, nsims = N_SIMS, seed = SEED)
                                   nthreads = 1L)$total_hist
 
   ans[date == max(date)][
-    state != "Susceptible" & state != "Susceptible Quarantine",
+    state != "Susceptible" & state != "Quarantined Susceptible",
     .(total = sum(counts)), by = sim_num]$total
 }
 

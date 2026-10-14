@@ -91,34 +91,36 @@ uncertainty in the model’s assumptions.
 
 *Increasing vaccination: 60% → 85% (quarantine 14/7/0 days)*
 
-All comparisons in this panel have a benefit of 5 points or more.
+| Setting | Risk before | Risk after | Benefit, points (95% CI) | Verdict       |
+|:--------|------------:|-----------:|-------------------------:|:--------------|
+| Middle  |        1.6% |       0.0% |      +1.6 (+1.2 to +2.0) | Clearly lower |
 
 *Increasing high-risk quarantine: 14 → 21 days (medium 14, low 0 days)*
 
 | Setting                     | Risk before | Risk after | Benefit, points (95% CI) | Verdict         |
 |:----------------------------|------------:|-----------:|-------------------------:|:----------------|
-| Elementary · 85% vaccinated |        0.4% |       0.4% |      +0.0 (-0.3 to +0.3) | No clear change |
-| Middle · 60% vaccinated     |        8.6% |       7.6% |      +1.0 (-0.2 to +2.2) | No clear change |
-| Middle · 85% vaccinated     |        0.3% |       0.2% |      +0.1 (-0.1 to +0.4) | No clear change |
-| High · 85% vaccinated       |        6.2% |       5.2% |      +0.9 (-0.1 to +1.9) | No clear change |
+| Elementary · 85% vaccinated |        0.0% |       0.0% |      -0.0 (-0.1 to +0.1) | No clear change |
+| Middle · 60% vaccinated     |        1.8% |       0.8% |      +0.9 (+0.5 to +1.5) | Clearly lower   |
+| Middle · 85% vaccinated     |        0.0% |       0.0% |      -0.0 (-0.1 to +0.1) | No clear change |
+| High · 85% vaccinated       |        0.6% |       0.2% |      +0.3 (+0.0 to +0.6) | Clearly lower   |
 
 *Increasing medium-risk quarantine: 0 → 14 days (high 14, low 0 days)*
 
 | Setting                     | Risk before | Risk after | Benefit, points (95% CI) | Verdict         |
 |:----------------------------|------------:|-----------:|-------------------------:|:----------------|
-| Elementary · 85% vaccinated |        1.0% |       0.4% |      +0.6 (+0.2 to +1.0) | Clearly lower   |
-| Middle · 60% vaccinated     |        8.3% |       8.6% |      -0.4 (-1.6 to +0.8) | No clear change |
-| Middle · 85% vaccinated     |        0.3% |       0.3% |      -0.0 (-0.3 to +0.2) | No clear change |
-| High · 85% vaccinated       |        8.0% |       6.2% |      +1.9 (+0.7 to +3.0) | Clearly lower   |
+| Elementary · 85% vaccinated |        0.1% |       0.0% |      +0.1 (-0.0 to +0.2) | No clear change |
+| Middle · 60% vaccinated     |        1.6% |       1.8% |      -0.2 (-0.8 to +0.4) | No clear change |
+| Middle · 85% vaccinated     |        0.0% |       0.0% |      -0.0 (-0.1 to +0.1) | No clear change |
+| High · 85% vaccinated       |        2.1% |       0.6% |      +1.6 (+1.1 to +2.1) | Clearly lower   |
 
 *Increasing low-risk quarantine: 0 → 7 days (high 14, medium 7 days)*
 
 | Setting                     | Risk before | Risk after | Benefit, points (95% CI) | Verdict         |
 |:----------------------------|------------:|-----------:|-------------------------:|:----------------|
-| Elementary · 85% vaccinated |        0.8% |       2.2% |      -1.5 (-2.0 to -1.0) | Clearly higher  |
-| Middle · 60% vaccinated     |        8.1% |      10.9% |      -2.8 (-4.1 to -1.5) | Clearly higher  |
-| Middle · 85% vaccinated     |        0.1% |       1.3% |      -1.2 (-1.6 to -0.8) | Clearly higher  |
-| High · 85% vaccinated       |        6.8% |       7.9% |      -1.1 (-2.2 to +0.1) | No clear change |
+| Elementary · 85% vaccinated |        0.0% |       0.0% |      +0.0 (-0.1 to +0.1) | No clear change |
+| Middle · 60% vaccinated     |        1.6% |       1.2% |      +0.5 (-0.1 to +1.0) | No clear change |
+| Middle · 85% vaccinated     |        0.0% |       0.0% |      -0.0 (-0.1 to +0.1) | No clear change |
+| High · 85% vaccinated       |        1.0% |       0.6% |      +0.3 (-0.1 to +0.7) | No clear change |
 
 ## 3. Which quarantine combinations keep risk low?
 
@@ -166,61 +168,60 @@ model’s assumptions.
 
 | Vaccinated | High / medium days | Low-risk days compared | Risk, 0 days | Risk, with days | Benefit, points (95% CI) | Clearly under 2 points? |
 |:-----------|:-------------------|:-----------------------|-------------:|----------------:|-------------------------:|:-----------------------:|
-| 70%        | 21 / 21            | 0 vs 5                 |        10.4% |            9.0% |      +1.4 (+0.2 to +2.8) |           No            |
-| 70%        | 21 / 7             | 0 vs 3                 |        14.3% |           12.7% |      +1.6 (+0.1 to +3.1) |           No            |
-| 80%        | 21 / 21            | 0 vs 21                |         1.9% |            6.5% |      -4.6 (-5.5 to -3.7) |           Yes           |
-| 80%        | 21 / 14            | 0 vs 14                |         2.3% |            6.0% |      -3.7 (-4.6 to -2.9) |           Yes           |
-| 80%        | 21 / 7             | 0 vs 7                 |         2.4% |            4.8% |      -2.4 (-3.2 to -1.6) |           Yes           |
-| 80%        | 14 / 14            | 0 vs 14                |         2.8% |            6.6% |      -3.9 (-4.8 to -2.9) |           Yes           |
-| 80%        | 14 / 7             | 0 vs 7                 |         3.2% |            5.9% |      -2.7 (-3.7 to -1.8) |           Yes           |
-| 80%        | 7 / 7              | 0 vs 7                 |         4.8% |            8.0% |      -3.2 (-4.3 to -2.1) |           Yes           |
-| 85%        | 21 / 21            | 0 vs 21                |         0.4% |            3.1% |      -2.7 (-3.3 to -2.1) |           Yes           |
-| 85%        | 21 / 14            | 0 vs 14                |         0.4% |            2.8% |      -2.4 (-3.0 to -1.9) |           Yes           |
-| 85%        | 21 / 7             | 0 vs 7                 |         0.4% |            1.8% |      -1.4 (-1.9 to -1.0) |           Yes           |
-| 85%        | 14 / 14            | 0 vs 14                |         0.4% |            3.0% |      -2.5 (-3.1 to -2.0) |           Yes           |
-| 85%        | 14 / 7             | 0 vs 7                 |         0.8% |            2.2% |      -1.5 (-2.0 to -1.0) |           Yes           |
-| 85%        | 7 / 7              | 0 vs 7                 |         0.8% |            3.2% |      -2.3 (-3.0 to -1.7) |           Yes           |
+| 80%        | 21 / 21            | 0 vs 14                |         0.2% |            0.0% |      +0.2 (+0.0 to +0.4) |           Yes           |
+| 80%        | 21 / 14            | 0 vs 10                |         0.3% |            0.0% |      +0.3 (+0.1 to +0.5) |           Yes           |
+| 80%        | 21 / 7             | 0 vs 5                 |         0.2% |            0.1% |      +0.1 (-0.1 to +0.2) |           Yes           |
+| 80%        | 14 / 14            | 0 vs 14                |         0.3% |            0.0% |      +0.3 (+0.1 to +0.5) |           Yes           |
+| 80%        | 14 / 7             | 0 vs 7                 |         0.5% |            0.2% |      +0.4 (+0.1 to +0.7) |           Yes           |
+| 80%        | 7 / 7              | 0 vs 7                 |         1.6% |            0.5% |      +1.1 (+0.7 to +1.6) |           Yes           |
+| 85%        | 21 / 21            | 0 vs 21                |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 85%        | 21 / 14            | 0 vs 14                |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 85%        | 21 / 7             | 0 vs 7                 |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 85%        | 14 / 14            | 0 vs 14                |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 85%        | 14 / 7             | 0 vs 3                 |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 85%        | 7 / 7              | 0 vs 3                 |         0.0% |            0.0% |      +0.1 (-0.1 to +0.2) |           Yes           |
 
 #### Middle
 
 | Vaccinated | High / medium days | Low-risk days compared | Risk, 0 days | Risk, with days | Benefit, points (95% CI) | Clearly under 2 points? |
 |:-----------|:-------------------|:-----------------------|-------------:|----------------:|-------------------------:|:-----------------------:|
-| 60%        | 21 / 21            | 0 vs 21                |         6.6% |            9.4% |      -2.7 (-3.9 to -1.5) |           Yes           |
-| 60%        | 21 / 14            | 0 vs 3                 |         7.6% |            7.6% |      +0.1 (-1.1 to +1.2) |           Yes           |
-| 60%        | 21 / 7             | 0 vs 7                 |         7.4% |            8.6% |      -1.2 (-2.4 to -0.1) |           Yes           |
-| 60%        | 14 / 14            | 0 vs 14                |         8.6% |           10.7% |      -2.1 (-3.3 to -0.8) |           Yes           |
-| 60%        | 14 / 7             | 0 vs 7                 |         8.1% |           10.9% |      -2.8 (-4.1 to -1.5) |           Yes           |
-| 60%        | 7 / 7              | 0 vs 7                 |        11.6% |           14.6% |      -2.9 (-4.4 to -1.4) |           Yes           |
-| 70%        | 21 / 21            | 0 vs 21                |         1.4% |            6.6% |      -5.2 (-6.1 to -4.4) |           Yes           |
-| 70%        | 21 / 14            | 0 vs 14                |         1.5% |            5.4% |      -3.9 (-4.7 to -3.1) |           Yes           |
-| 70%        | 21 / 7             | 0 vs 7                 |         1.6% |            3.4% |      -1.7 (-2.4 to -1.0) |           Yes           |
-| 70%        | 14 / 14            | 0 vs 14                |         2.2% |            7.0% |      -4.8 (-5.7 to -3.9) |           Yes           |
-| 70%        | 14 / 7             | 0 vs 7                 |         2.2% |            4.7% |      -2.4 (-3.2 to -1.6) |           Yes           |
-| 70%        | 7 / 7              | 0 vs 7                 |         2.7% |            7.9% |      -5.2 (-6.2 to -4.2) |           Yes           |
-| 80%        | 21 / 21            | 0 vs 21                |         0.4% |            4.2% |      -3.9 (-4.6 to -3.2) |           Yes           |
-| 80%        | 21 / 14            | 0 vs 14                |         0.4% |            3.0% |      -2.6 (-3.2 to -2.1) |           Yes           |
-| 80%        | 21 / 7             | 0 vs 7                 |         0.4% |            1.9% |      -1.5 (-2.0 to -1.0) |           Yes           |
-| 80%        | 14 / 14            | 0 vs 14                |         0.3% |            3.6% |      -3.3 (-3.9 to -2.7) |           Yes           |
-| 80%        | 14 / 7             | 0 vs 7                 |         0.6% |            2.8% |      -2.1 (-2.7 to -1.6) |           Yes           |
-| 80%        | 7 / 7              | 0 vs 7                 |         0.6% |            3.8% |      -3.2 (-3.8 to -2.5) |           Yes           |
-| 85%        | 21 / 21            | 0 vs 21                |         0.2% |            2.4% |      -2.2 (-2.8 to -1.8) |           Yes           |
-| 85%        | 21 / 14            | 0 vs 14                |         0.2% |            1.9% |      -1.7 (-2.2 to -1.3) |           Yes           |
-| 85%        | 21 / 7             | 0 vs 7                 |         0.2% |            1.2% |      -1.1 (-1.5 to -0.7) |           Yes           |
-| 85%        | 14 / 14            | 0 vs 14                |         0.3% |            2.5% |      -2.2 (-2.8 to -1.8) |           Yes           |
-| 85%        | 14 / 7             | 0 vs 7                 |         0.1% |            1.3% |      -1.2 (-1.6 to -0.8) |           Yes           |
-| 85%        | 7 / 7              | 0 vs 7                 |         0.4% |            2.0% |      -1.6 (-2.1 to -1.2) |           Yes           |
+| 60%        | 21 / 21            | 0 vs 21                |         0.6% |            0.3% |      +0.4 (+0.1 to +0.7) |           Yes           |
+| 60%        | 21 / 14            | 0 vs 14                |         0.8% |            0.3% |      +0.5 (+0.2 to +0.9) |           Yes           |
+| 60%        | 21 / 7             | 0 vs 7                 |         0.6% |            0.4% |      +0.2 (-0.1 to +0.5) |           Yes           |
+| 60%        | 14 / 14            | 0 vs 14                |         1.8% |            0.9% |      +0.9 (+0.4 to +1.4) |           Yes           |
+| 60%        | 14 / 7             | 0 vs 5                 |         1.6% |            1.0% |      +0.6 (+0.1 to +1.1) |           Yes           |
+| 60%        | 7 / 7              | 0 vs 5                 |         4.8% |            3.7% |      +1.2 (+0.3 to +2.0) |           No            |
+| 70%        | 21 / 21            | 0 vs 21                |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 70%        | 21 / 14            | 0 vs 14                |         0.0% |            0.0% |      +0.1 (-0.1 to +0.2) |           Yes           |
+| 70%        | 21 / 7             | 0 vs 3                 |         0.1% |            0.0% |      +0.1 (-0.1 to +0.2) |           Yes           |
+| 70%        | 14 / 14            | 0 vs 10                |         0.1% |            0.0% |      +0.1 (+0.0 to +0.3) |           Yes           |
+| 70%        | 14 / 7             | 0 vs 3                 |         0.1% |            0.0% |      +0.1 (-0.1 to +0.2) |           Yes           |
+| 70%        | 7 / 7              | 0 vs 5                 |         0.5% |            0.2% |      +0.3 (-0.0 to +0.6) |           Yes           |
+| 80%        | 21 / 21            | 0 vs 21                |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 80%        | 21 / 14            | 0 vs 14                |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 80%        | 21 / 7             | 0 vs 7                 |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 80%        | 14 / 14            | 0 vs 14                |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 80%        | 14 / 7             | 0 vs 7                 |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 80%        | 7 / 7              | 0 vs 7                 |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 85%        | 21 / 21            | 0 vs 21                |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 85%        | 21 / 14            | 0 vs 14                |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 85%        | 21 / 7             | 0 vs 7                 |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 85%        | 14 / 14            | 0 vs 14                |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 85%        | 14 / 7             | 0 vs 7                 |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
+| 85%        | 7 / 7              | 0 vs 7                 |         0.0% |            0.0% |      +0.0 (-0.1 to +0.1) |           Yes           |
 
 #### High
 
 | Vaccinated | High / medium days | Low-risk days compared | Risk, 0 days | Risk, with days | Benefit, points (95% CI) | Clearly under 2 points? |
 |:-----------|:-------------------|:-----------------------|-------------:|----------------:|-------------------------:|:-----------------------:|
-| 80%        | 21 / 21            | 0 vs 5                 |        12.0% |           10.7% |      +1.3 (-0.1 to +2.7) |           No            |
-| 85%        | 21 / 21            | 0 vs 21                |         5.1% |            6.7% |      -1.6 (-2.6 to -0.6) |           Yes           |
-| 85%        | 21 / 14            | 0 vs 3                 |         5.2% |            5.0% |      +0.2 (-0.7 to +1.2) |           Yes           |
-| 85%        | 21 / 7             | 0 vs 7                 |         6.0% |            6.4% |      -0.4 (-1.5 to +0.7) |           Yes           |
-| 85%        | 14 / 14            | 0 vs 14                |         6.2% |            7.9% |      -1.7 (-2.8 to -0.6) |           Yes           |
-| 85%        | 14 / 7             | 0 vs 7                 |         6.8% |            7.9% |      -1.1 (-2.2 to +0.1) |           Yes           |
-| 85%        | 7 / 7              | 0 vs 5                 |        10.0% |            9.1% |      +1.0 (-0.3 to +2.3) |           No            |
+| 80%        | 21 / 21            | 0 vs 14                |         2.3% |            0.8% |      +1.4 (+0.9 to +2.0) |           No            |
+| 80%        | 21 / 14            | 0 vs 10                |         2.9% |            1.2% |      +1.7 (+1.1 to +2.4) |           No            |
+| 85%        | 21 / 21            | 0 vs 14                |         0.2% |            0.0% |      +0.1 (-0.0 to +0.3) |           Yes           |
+| 85%        | 21 / 14            | 0 vs 10                |         0.2% |            0.0% |      +0.2 (+0.0 to +0.4) |           Yes           |
+| 85%        | 21 / 7             | 0 vs 5                 |         0.5% |            0.2% |      +0.2 (-0.0 to +0.5) |           Yes           |
+| 85%        | 14 / 14            | 0 vs 7                 |         0.6% |            0.2% |      +0.4 (+0.1 to +0.7) |           Yes           |
+| 85%        | 14 / 7             | 0 vs 5                 |         1.0% |            0.6% |      +0.3 (-0.1 to +0.7) |           Yes           |
+| 85%        | 7 / 7              | 0 vs 5                 |         3.5% |            1.6% |      +1.9 (+1.2 to +2.6) |           No            |
 
 </div>
 
@@ -252,11 +253,11 @@ considered.
     total quarantine days $h + m + l$. If several tie, the one with the
     lowest risk is chosen.
 
-*Example:* Elementary school, 60% vaccinated. $P_0$ = 64.0% and
-$P_{\min}$ = 18.2%, so $G$ = 45.7 percentage points. A good-enough
-policy must bring the risk down to 27.4% or lower (64.0% − 0.8 × 45.7
-points). The shortest such policy is **21/7/5** (33 days in total), with
-a risk of 27.2%.
+*Example:* Elementary school, 60% vaccinated. $P_0$ = 61.4% and
+$P_{\min}$ = 5.4%, so $G$ = 56.0 percentage points. A good-enough policy
+must bring the risk down to 16.6% or lower (61.4% − 0.8 × 56.0 points).
+The shortest such policy is **21/7/5** (33 days in total), with a risk
+of 15.7%.
 
 ![](md_figures/03_quarantine_policy_analysis-fig5b-1.png)
 
@@ -284,72 +285,72 @@ a risk of 27.2%.
 CONCLUSIONS  (outbreak = more than 25 cases)
 
 1. THE PROBLEM
-   With minimal quarantine, High school is the riskiest (average 47%)
-   and Middle school the least risky (average 4%).
+   With minimal quarantine, High school is the riskiest (average 43%)
+   and Middle school the least risky (average 1%).
 
 2. WHAT MATTERS MOST
    Increasing vaccination: 60% -> 85%  (quarantine 14/7/0 days):
-     Elementary: risk 42% -> 1% (change -40.9 points, 95% CI -42.5 to -39.3: clearly lower)
-     Middle: risk 8% -> 0% (change -8.0 points, 95% CI -8.8 to -7.1: clearly lower)
-     High: risk 61% -> 7% (change -54.6 points, 95% CI -56.3 to -52.9: clearly lower)
+     Elementary: risk 34% -> 0% (change -33.7 points, 95% CI -35.1 to -32.2: clearly lower)
+     Middle: risk 2% -> 0% (change -1.6 points, 95% CI -2.0 to -1.2: clearly lower)
+     High: risk 54% -> 1% (change -53.4 points, 95% CI -55.0 to -51.9: clearly lower)
    Increasing high-risk quarantine: 14 -> 21 days  (medium 14, low 0 days):
-     Elementary - 60% vaccinated: risk 35% -> 28% (change -7.6 points, 95% CI -9.6 to -5.5: clearly lower)
-     Elementary - 85% vaccinated: risk 0% -> 0% (change -0.0 points, 95% CI -0.3 to +0.3: no clear change)
-     Middle - 60% vaccinated: risk 9% -> 8% (change -1.0 points, 95% CI -2.2 to +0.2: no clear change)
-     Middle - 85% vaccinated: risk 0% -> 0% (change -0.1 points, 95% CI -0.4 to +0.1: no clear change)
-     High - 60% vaccinated: risk 55% -> 46% (change -8.7 points, 95% CI -10.9 to -6.5: clearly lower)
-     High - 85% vaccinated: risk 6% -> 5% (change -0.9 points, 95% CI -1.9 to +0.1: no clear change)
+     Elementary - 60% vaccinated: risk 25% -> 17% (change -8.0 points, 95% CI -9.8 to -6.2: clearly lower)
+     Elementary - 85% vaccinated: risk 0% -> 0% (change +0.0 points, 95% CI -0.1 to +0.1: no clear change)
+     Middle - 60% vaccinated: risk 2% -> 1% (change -0.9 points, 95% CI -1.5 to -0.5: clearly lower)
+     Middle - 85% vaccinated: risk 0% -> 0% (change +0.0 points, 95% CI -0.1 to +0.1: no clear change)
+     High - 60% vaccinated: risk 45% -> 33% (change -12.1 points, 95% CI -14.2 to -10.0: clearly lower)
+     High - 85% vaccinated: risk 1% -> 0% (change -0.3 points, 95% CI -0.6 to -0.0: clearly lower)
    Increasing medium-risk quarantine: 0 -> 14 days  (high 14, low 0 days):
-     Elementary - 60% vaccinated: risk 47% -> 35% (change -11.9 points, 95% CI -14.0 to -9.8: clearly lower)
-     Elementary - 85% vaccinated: risk 1% -> 0% (change -0.6 points, 95% CI -1.0 to -0.2: clearly lower)
-     Middle - 60% vaccinated: risk 8% -> 9% (change +0.4 points, 95% CI -0.8 to +1.6: no clear change)
-     Middle - 85% vaccinated: risk 0% -> 0% (change +0.0 points, 95% CI -0.2 to +0.3: no clear change)
-     High - 60% vaccinated: risk 70% -> 55% (change -15.6 points, 95% CI -17.7 to -13.5: clearly lower)
-     High - 85% vaccinated: risk 8% -> 6% (change -1.9 points, 95% CI -3.0 to -0.7: clearly lower)
+     Elementary - 60% vaccinated: risk 42% -> 25% (change -16.8 points, 95% CI -18.9 to -14.8: clearly lower)
+     Elementary - 85% vaccinated: risk 0% -> 0% (change -0.1 points, 95% CI -0.2 to +0.0: no clear change)
+     Middle - 60% vaccinated: risk 2% -> 2% (change +0.2 points, 95% CI -0.4 to +0.8: no clear change)
+     Middle - 85% vaccinated: risk 0% -> 0% (change +0.0 points, 95% CI -0.1 to +0.1: no clear change)
+     High - 60% vaccinated: risk 66% -> 45% (change -20.4 points, 95% CI -22.5 to -18.2: clearly lower)
+     High - 85% vaccinated: risk 2% -> 1% (change -1.6 points, 95% CI -2.1 to -1.1: clearly lower)
    Increasing low-risk quarantine: 0 -> 7 days  (high 14, medium 7 days):
-     Elementary - 60% vaccinated: risk 42% -> 31% (change -10.9 points, 95% CI -13.0 to -8.9: clearly lower)
-     Elementary - 85% vaccinated: risk 1% -> 2% (change +1.5 points, 95% CI +1.0 to +2.0: clearly higher)
-     Middle - 60% vaccinated: risk 8% -> 11% (change +2.8 points, 95% CI +1.5 to +4.1: clearly higher)
-     Middle - 85% vaccinated: risk 0% -> 1% (change +1.2 points, 95% CI +0.8 to +1.6: clearly higher)
-     High - 60% vaccinated: risk 61% -> 53% (change -8.9 points, 95% CI -11.0 to -6.7: clearly lower)
-     High - 85% vaccinated: risk 7% -> 8% (change +1.1 points, 95% CI -0.1 to +2.2: no clear change)
+     Elementary - 60% vaccinated: risk 34% -> 19% (change -14.2 points, 95% CI -16.1 to -12.3: clearly lower)
+     Elementary - 85% vaccinated: risk 0% -> 0% (change -0.0 points, 95% CI -0.1 to +0.1: no clear change)
+     Middle - 60% vaccinated: risk 2% -> 1% (change -0.5 points, 95% CI -1.0 to +0.1: no clear change)
+     Middle - 85% vaccinated: risk 0% -> 0% (change +0.0 points, 95% CI -0.1 to +0.1: no clear change)
+     High - 60% vaccinated: risk 54% -> 43% (change -11.6 points, 95% CI -13.8 to -9.5: clearly lower)
+     High - 85% vaccinated: risk 1% -> 1% (change -0.3 points, 95% CI -0.7 to +0.1: no clear change)
 
 3. WHAT A SCHOOL SHOULD DO
    To keep risk under 10%:
-     Elementary: achievable from 70% vaccination; minimal quarantine is enough from 80% vaccination.
-     Middle: achievable from 60% vaccination; minimal quarantine is enough from 70% vaccination.
-     High: achievable from 85% vaccination; minimal quarantine is enough at no tested level.
-   To keep risk under 20%:
      Elementary: achievable from 60% vaccination; minimal quarantine is enough from 80% vaccination.
      Middle: achievable from 60% vaccination; minimal quarantine is enough from 60% vaccination.
      High: achievable from 70% vaccination; minimal quarantine is enough from 85% vaccination.
-   To keep risk under 30%:
+   To keep risk under 20%:
      Elementary: achievable from 60% vaccination; minimal quarantine is enough from 80% vaccination.
      Middle: achievable from 60% vaccination; minimal quarantine is enough from 60% vaccination.
      High: achievable from 60% vaccination; minimal quarantine is enough from 85% vaccination.
+   To keep risk under 30%:
+     Elementary: achievable from 60% vaccination; minimal quarantine is enough from 80% vaccination.
+     Middle: achievable from 60% vaccination; minimal quarantine is enough from 60% vaccination.
+     High: achievable from 60% vaccination; minimal quarantine is enough from 80% vaccination.
 
 4. LOW-RISK QUARANTINE
-   Elementary: the best low-risk quarantine is usually about 0 days.
-     It is not worth it (risk drops less than 2%) in 58% of high/medium settings.
-     On average, risk goes 14% -> 11% with the best number of days,
-     and only to 11% even with the longest low-risk quarantine.
+   Elementary: the best low-risk quarantine is usually about 2.5 days.
+     It is not worth it (risk drops less than 2%) in 50% of high/medium settings.
+     On average, risk goes 9% -> 5% with the best number of days,
+     and only to 5% even with the longest low-risk quarantine.
    Middle: the best low-risk quarantine is usually about 0 days.
      It is not worth it (risk drops less than 2%) in 100% of high/medium settings.
-     On average, risk goes 3% -> 3% with the best number of days,
-     and only to 3% even with the longest low-risk quarantine.
+     On average, risk goes 0% -> 0% with the best number of days,
+     and only to 0% even with the longest low-risk quarantine.
    High: the best low-risk quarantine is usually about 5 days.
-     It is not worth it (risk drops less than 2%) in 29% of high/medium settings.
-     On average, risk goes 30% -> 24% with the best number of days,
-     and only to 24% even with the longest low-risk quarantine.
+     It is not worth it (risk drops less than 2%) in 33% of high/medium settings.
+     On average, risk goes 20% -> 14% with the best number of days,
+     and only to 14% even with the longest low-risk quarantine.
 
 5. SIZE OF OUTBREAKS
-   Elementary, minimal quarantine: chance of more than 50 cases falls from 21% at 60% to 0% at 85% vaccination.
-     Optimal quarantine (high/medium/low days): 21/7/5 at 60%; 21/7/3 at 70%; 21/0/0 at 80%; 7/0/0 at 85%.
-     With it, the chance of more than 50 cases is 13% at 60% and 0% at 85% vaccination.
-   Middle, minimal quarantine: chance of more than 50 cases falls from 3% at 60% to 0% at 85% vaccination.
+   Elementary, minimal quarantine: chance of more than 50 cases falls from 7% at 60% to 0% at 85% vaccination.
+     Optimal quarantine (high/medium/low days): 21/7/5 at 60%; 14/7/5 at 70%; 7/7/7 at 80%; 7/0/0 at 85%.
+     With it, the chance of more than 50 cases is 0% at 60% and 0% at 85% vaccination.
+   Middle, minimal quarantine: chance of more than 50 cases falls from 0% at 60% to 0% at 85% vaccination.
      Optimal quarantine (high/medium/low days): 21/0/0 at 60%; 7/0/0 at 70%; 7/0/0 at 80%; 7/0/0 at 85%.
+     With it, the chance of more than 50 cases is 0% at 60% and 0% at 85% vaccination.
+   High, minimal quarantine: chance of more than 50 cases falls from 46% at 60% to 0% at 85% vaccination.
+     Optimal quarantine (high/medium/low days): 14/14/10 at 60%; 21/7/5 at 70%; 14/7/5 at 80%; 14/7/0 at 85%.
      With it, the chance of more than 50 cases is 1% at 60% and 0% at 85% vaccination.
-   High, minimal quarantine: chance of more than 50 cases falls from 66% at 60% to 0% at 85% vaccination.
-     Optimal quarantine (high/medium/low days): 21/14/10 at 60%; 14/14/10 at 70%; 21/7/5 at 80%; 21/7/0 at 85%.
-     With it, the chance of more than 50 cases is 23% at 60% and 0% at 85% vaccination.
 ```
